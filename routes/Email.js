@@ -1,8 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-const {isRootMail, verifyMail} = require("../controllers/Email")
+const {isRootMail, verifyMail, addRootMail, createVerifyMailCode} = require("../controllers/Email")
+// const {rootMailExists} = require("../middleware/rootMailExists")
 
-router.post("/verifyMail", verifyMail);
+router.post("/addRootMail", addRootMail);
 router.get("/isRootMail", isRootMail);
+// router.use(rootMailExists)
+router.post("/createVerifyMailCode", createVerifyMailCode);
+router.post("/verifyMail", verifyMail);
+
 module.exports= router

@@ -35,35 +35,74 @@ const showUID = async (req, res, next) => {
 };
 
 const createUID = async (req, res, next) => {
-  const { seat_number, course_type, course_number, email } = req.body;
+  const {
+    centre,
+    course_start_date,
+    seat_number,
+    course_type,
+    course_number,
+    email,
+  } = req.body;
   try {
-    if (!seat_number) {
+    if (!centre) {
       return res.status(400).json({
         status: "fail",
-        msg: `Seat number not present!`,
+        msg: `Centre name not present!`,
       });
     }
-    if (!course_type || !["a"].includes(course_type)) {
+    if (
+      !course_type ||
+      ![
+        "ST",
+        "10days",
+        "20days",
+        "30days",
+        "45days",
+        "60days",
+        "10days special",
+      ].includes(course_type)
+    ) {
       return res.status(400).json({
         status: "fail",
         msg: `Either course type not present or invalid course type!`,
       });
     }
     if (
-      !course_number ||
-      Number.isNaN(course_number) ||
-      Number.parseInt(course_number) ||
-      course_number < 1
+      !course_start_date &&
+      (!course_number ||
+        Number.isNaN(course_number) ||
+        Number.parseInt(course_number) ||
+        course_number < 1)
     ) {
       return res.status(400).json({
         status: "fail",
         msg: `Either course number not present or invalid course number!`,
+      });
+    } else if (
+      course_start_date &&
+      course_start_date instanceof Date &&
+      !isNaN(course_start_date)
+    ) {
+      return res.status(400).json({
+        status: "fail",
+        msg: `Either course_start_date not present or invalid course_start_date!`,
+      });
+    } else if (!course_start_date && !course_number) {
+      return res.status(400).json({
+        status: "fail",
+        msg: `Neither course_start_date nor course number are present!`,
       });
     }
     if (!email) {
       return res.status(400).json({
         status: "fail",
         msg: `Email not present!`,
+      });
+    }
+    if (!seat_number) {
+      return res.status(400).json({
+        status: "fail",
+        msg: `Seat number not present!`,
       });
     }
 

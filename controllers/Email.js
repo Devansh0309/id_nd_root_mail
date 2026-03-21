@@ -1,6 +1,10 @@
 const { db } = require("../database/db");
+const generateToken = require("../services/generateJWTToken");
+const sendEmail = require("../services/sendVerifyCodeToMail");
 const EmailModel = db.Email;
 const UIDModel = db.UniqueIds;
+const UserModel = db.Users;
+const jwt = require("jsonwebtoken");
 
 //use Authentication, authorization middleware, main concern is uid
 const isRootMail = async (req, res, next) => {
@@ -36,14 +40,69 @@ const isRootMail = async (req, res, next) => {
   }
 };
 
-const createVerifyMailCode = async(req,res, next)=>{
-  // see this for soln. : https://chatgpt.com/share/69bd481e-0ca0-8007-b801-4f598f1cd931
-}
+const sendVerifyCodeToMail = async (req, res, next) => {
+  const { user_id, email } = req.body;
+  try {
+    if (!user_id) {
+      return res.status(400).json({
+        status: "fail",
+        msg: `User id not present!`,
+      });
+    }
+    if (!email) {
+      return res.status(400).json({
+        status: "fail",
+        msg: `Email not present!`,
+      });
+    }
+    //service api, external api, request, where server is a client requesting other server to send mail: send otp on mail for mail verification use NodeMailer or other service.
+    const signWith = { user_id, email };
+    const secretKey = process.env.JWT_SECRET;
+    const token = generateToken(signWith, secretKey);
+    const verificationLink = `http://localhost:8000/email/verifyMail?token=${token}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Verify Your Email",
+      html: `
+      <h3>Email Verification</h3>
+      <p>Click below to verify your email:</p>
+      <a href="${verificationLink}">Verify Email</a>
+    `,
+    };
+    await sendEmail(mailOptions);
+  } catch (error) {
+    console.error(
+      "Failed to send email or generate token or setup nodemailer!",
+      error,
+    );
+    throw new Error(error);
+  }
+};
 
 const verifyMail = async (req, res, next) => {
+  const { token } = req.query;
+
   try {
-    //mail verification
-  } catch (error) {}
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await UserModel.findByPk(decoded.user_id);
+    const email = await EmailModel.findOne({
+      where: {
+        email: decoded.email,
+        root_mail: 1,
+      },
+      raw: true,
+    });
+
+    if (!user) return res.status(400).send("Invalid user");
+    if (!email || !email.root_mail)
+      return res.status(400).send("Invalid root email");
+
+    res.send("Email verified successfully!");
+  } catch (err) {
+    res.status(400).send("Invalid or expired token");
+  }
 };
 
 const addRootMail = async (req, res, next) => {
@@ -90,4 +149,4 @@ const addRootMail = async (req, res, next) => {
   }
 };
 
-module.exports = { isRootMail, verifyMail, addRootMail,createVerifyMailCode };
+module.exports = { isRootMail, sendVerifyCodeToMail, verifyMail, addRootMail };

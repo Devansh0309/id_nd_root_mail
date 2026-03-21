@@ -66,8 +66,64 @@ const createUID = async (req, res, next) => {
         msg: `Email not present!`,
       });
     }
+
+    //*What type of id to use for uid which saves space, fits well with max users, avoids collision?
   } catch (error) {}
 };
+
+// async function generateUID(lastKey) {
+//   let last_key = lastKey
+//   const transaction = await db?.sequelize.transaction();
+//   console.log({
+//     last_key
+//   });
+//   try {
+
+//     let newPrimaryKey;
+
+//     // Fetch the last key only if lastKey is null
+//     if (!last_key) {
+//       console.log("Fetching last record from database...");
+//       const lastRecord = await productItemBids?.findOne({
+//         order: [["id", "DESC"]],
+//         lock: transaction?.LOCK?.UPDATE,
+//         transaction,
+//       });
+
+//       if (lastRecord) {
+//         last_key = lastRecord.id;
+//         console.log("Fetched lastKey from database:", last_key);
+//       } else {
+//         // No records found, initialize lastKey
+//         last_key = "00004"; // Adjust this to your desired starting value
+//         console.log("No record found, initializing lastKey:", last_key);
+//       }
+//     }
+
+//     // Generate new primary key based on lastKey
+//     newPrimaryKey = (parseInt(lastestKey, 36) + 1)
+//       .toString(36)
+//       .toUpperCase()
+//       .padStart(5, "0");
+
+//     // Check for overflow condition and reset to 6 characters if needed
+//     if (newPrimaryKey?.length > 5) {
+//       newPrimaryKey = "000001"; // Transition to 6 characters
+//       console.log("Overflow occurred. Resetting newPrimaryKey to:", newPrimaryKey);
+//     }
+
+//     // Update lastKey with the newly generated primary key
+//     lastestKey = newPrimaryKey;
+//     console.log("Updated lastKey to:", lastestKey);
+
+//     await transaction?.commit();
+//     return {newPrimaryKey, lastK:lastestKey};
+//   } catch (error) {
+//     await transaction?.rollback();
+//     console.error("Error generating primary key:", error);
+//     throw  new error;
+//   }
+// }
 
 const generateQRCode = async () => {
   //generateQRCode using UID data, for client. Can be used on client side or server?

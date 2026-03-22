@@ -8,7 +8,8 @@ const sequelize = new Sequelize('id_nd_mails', 'root', 'Abc@1234', {
 
 const Email = require("../model/email")
 const UniqueIds = require("../model/unique_id");
-const Users = require("../model/users")
+// const Users = require("../model/users")
+const Centre = require("../model/centre")
 
 async function connectToDB() {
   try {
@@ -27,7 +28,8 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.Email = Email(sequelize, DataTypes)
 db.UniqueIds = UniqueIds(sequelize, DataTypes)
-db.Users = Users(sequelize, DataTypes)
+// db.Users = Users(sequelize, DataTypes)
+db.Centre = Centre(sequelize, DataTypes)
 
 Object.keys(db).forEach((modelName) => {
   if ( db[modelName].associate && typeof db[modelName].associate === "function") {

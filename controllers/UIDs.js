@@ -16,6 +16,10 @@ const showUID = async (req, res, next) => {
       where: {
         email: mailId,
       },
+      include:{
+        model:UIDModel,
+        attributes:["unique_id"]
+      },
       raw: true,
     });
     if (getUID && getUID.email && getUID.u_id) {
@@ -36,7 +40,7 @@ const showUID = async (req, res, next) => {
 
 const createUID = async (req, res, next) => {
   const {
-    centre,
+    centre_id,
     course_start_date,
     seat_number,
     course_type,
@@ -44,10 +48,10 @@ const createUID = async (req, res, next) => {
     email,
   } = req.body;
   try {
-    if (!centre) {
+    if (!centre_id || Number.isNaN(centre_id) || Number.parseInt(centre_id)) {
       return res.status(400).json({
         status: "fail",
-        msg: `Centre name not present!`,
+        msg: `Centre id not present or not an integer!`,
       });
     }
     if (
@@ -105,7 +109,7 @@ const createUID = async (req, res, next) => {
         msg: `Seat number not present!`,
       });
     }
-
+    // create entry/row for uid, unique_id will be automatically created
     //*What type of id to use for uid which saves space, fits well with max users, avoids collision?
   } catch (error) {}
 };

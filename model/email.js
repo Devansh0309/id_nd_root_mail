@@ -8,7 +8,7 @@ const Email = sequelize.define("email", {
     defaultValue: 0,
   },
   u_id: { type: DataTypes.INTEGER, allowNull: false },
-  user_id:{} //to add
+  // user_id:{} //to add
 });
 
 Email.associate = (models) => {

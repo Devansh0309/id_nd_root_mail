@@ -16,6 +16,9 @@ Email.associate = (models) => {
     foreignKey: "u_id",
   }); //ok
   //add relation with user using user_id
+  // Email.belongsTo(models.Users, {
+  //   foreignKey: "user_id",
+  // });
 };
 return Email
 }

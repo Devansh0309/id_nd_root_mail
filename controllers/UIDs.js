@@ -1,6 +1,8 @@
 const { db } = require("../database/db");
 const UIDModel = db.UniqueIds;
 const EmailModel = db.Email;
+const CentreModel = db.Centre;
+const { Op } = db.sequelize;
 
 //use Authentication, authorization middleware, main concern is uid
 const showUID = async (req, res, next) => {
@@ -16,9 +18,9 @@ const showUID = async (req, res, next) => {
       where: {
         email: mailId,
       },
-      include:{
-        model:UIDModel,
-        attributes:["unique_id"]
+      include: {
+        model: UIDModel,
+        attributes: ["unique_id"],
       },
       raw: true,
     });
@@ -109,9 +111,60 @@ const createUID = async (req, res, next) => {
         msg: `Seat number not present!`,
       });
     }
-    // create entry/row for uid, unique_id will be automatically created
-    //*What type of id to use for uid which saves space, fits well with max users, avoids collision?
-  } catch (error) {}
+
+    const isValidCentreId = await CentreModel.findOne({
+      raw: true,
+      where: {
+        id: centre_id,
+      },
+      attributes: ["centre"],
+    });
+    //*can also validate that given details in payload like course start date, centre id, course type, seat number align with info form the Vipassana centre, meaning it is not fictional. Also can add that seat number belongs with the user who is hitting api or making createuid request
+    //also check if the user hitting api of createuid has some uid existing or not, check date of creation, if it is created within one month don't create, else create new one.
+    if (isValidCentreId && isValidCentreId.centre) {
+      // create entry/row for uid, unique_id will be automatically created
+      const [uniq_id, created] = await UIDModel.findOrCreate({
+        where: {
+          course_type,
+          centre_id,
+          [Op.or]: [{ course_start_date }, { course_number }],
+          seat_number,
+        },
+        defaults: {
+          centre_id,
+          course_start_date,
+          seat_number,
+          course_type,
+          course_number,
+        },
+      });
+      //*What type of id to use for uid which saves space, fits well with max users, avoids collision?
+      if (created) {
+        return res.status(200).json({
+          status: "success",
+          msg: `Entry for uniq_id created!`,
+          unique_id: uniq_id.unique_id
+        });
+      } else if (uniq_id && !created) {
+        return res.status(200).json({
+          status: "fail",
+          msg: `Entry for uniq_id already exists!`,
+          unique_id: uniq_id.unique_id
+        });
+      }
+      return res.status(500).json({
+        status: "fail",
+        msg: `Neither Entry for uniq_id created nor found!`,
+      });
+    }
+    return res.status(400).json({
+      status: "fail",
+      msg: `Centre id not valid!`,
+    });
+  } catch (error) {
+    console.error(err);
+    throw new Error();
+  }
 };
 
 // async function generateUID(lastKey) {

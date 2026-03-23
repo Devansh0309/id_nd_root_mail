@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       centre_id: { type: DataTypes.INTEGER, allowNull: false }, //to add
       course_start_date: { type: DataTypes.DATE, allowNull: false }, //to add
       seat_number: { type: DataTypes.INTEGER, allowNull: false }, //to add
+      // user_id:{} //to add
     },
     {
       indexes: [
@@ -52,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
     UniqueIds.belongsTo(models.Centre, {
       foreignKey: "centre_id",
     }); //ok
+    //add relation with user using user_id
+    // UniqueIds.belongsTo(models.Users, {
+    //   foreignKey: "user_id",
+    // });
   };
 
   UniqueIds.afterCreate(async (uniq_id) => {

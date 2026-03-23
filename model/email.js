@@ -8,7 +8,7 @@ const Email = sequelize.define("email", {
     defaultValue: 0,
   },
   u_id: { type: DataTypes.INTEGER, allowNull: false },
-  // user_id:{} //to add
+  user_id:{type: DataTypes.INTEGER} //to add
 });
 
 Email.associate = (models) => {
@@ -16,9 +16,9 @@ Email.associate = (models) => {
     foreignKey: "u_id",
   }); //ok
   //add relation with user using user_id
-  // Email.belongsTo(models.Users, {
-  //   foreignKey: "user_id",
-  // });
+  Email.belongsTo(models.Users, {
+    foreignKey: "user_id",
+  });
 };
 return Email
 }

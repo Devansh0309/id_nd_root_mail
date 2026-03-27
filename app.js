@@ -1,9 +1,10 @@
 const express = require('express');
 const { connectToDB } = require('./database/db');
 const allRoutes = require("./routes/allRoutes")
-
+const cors = require("cors")
 const app = express();
 const PORT = 8000;
+app.use(cors())
 
 allRoutes(app)
 

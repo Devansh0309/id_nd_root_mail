@@ -17,7 +17,7 @@ const isRootMail = async (req, res, next) => {
       });
     }
     const checkIsRootMail = await EmailModel.findOne({
-      attributes: ["root_mail"],
+      attributes: ["root_mail", "email"],
       where: {
         email: mailId,
       },

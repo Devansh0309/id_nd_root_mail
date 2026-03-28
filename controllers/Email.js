@@ -41,7 +41,8 @@ const isRootMail = async (req, res, next) => {
 };
 
 const sendVerifyCodeToMail = async (req, res, next) => {
-  const { user_id, email } = req.body;
+  console.log(req.query)
+  const { user_id, email } = req.query;
   try {
     if (!user_id) {
       return res.status(400).json({
@@ -58,6 +59,7 @@ const sendVerifyCodeToMail = async (req, res, next) => {
     //service api, external api, request, where server is a client requesting other server to send mail: send otp on mail for mail verification use NodeMailer or other service.
     const signWith = { user_id, email };
     const secretKey = process.env.JWT_SECRET;
+    console.log({env:process.env, secretKey})
     const token = generateToken(signWith, secretKey);
     const verificationLink = `http://localhost:8000/email/verifyMail?token=${token}`;
     const mailOptions = {
@@ -70,7 +72,7 @@ const sendVerifyCodeToMail = async (req, res, next) => {
       <a href="${verificationLink}">Verify Email</a>
     `,
     };
-    await sendEmail(mailOptions);
+    return await sendEmail(mailOptions, res);
   } catch (error) {
     console.error(
       "Failed to send email or generate token or setup nodemailer!",
@@ -99,7 +101,7 @@ const verifyMail = async (req, res, next) => {
     if (!email || !email.root_mail)
       return res.status(400).send("Invalid root email");
 
-    res.send("Email verified successfully!");
+    res.status(200).send("Email verified successfully!");
   } catch (err) {
     res.status(400).send("Invalid or expired token");
   }

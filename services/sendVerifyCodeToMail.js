@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (mailOptions) => {
+const sendEmail = async (mailOptions, res) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // Explicit host
     port: 587, // TLS port
@@ -14,6 +14,11 @@ const sendEmail = async (mailOptions) => {
   try {
     const send = await transporter.sendMail(mailOptions);
     console.log("Email sent successfully", send);
+    return res.status(200).json({
+      status: "success",
+      msg: "Email sent successfully",
+      data: send
+    })
   } catch (err) {
     console.error("Failed to send email", err);
     throw new Error(err);

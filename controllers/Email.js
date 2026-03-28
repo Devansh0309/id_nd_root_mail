@@ -59,7 +59,7 @@ const sendVerifyCodeToMail = async (req, res, next) => {
     //service api, external api, request, where server is a client requesting other server to send mail: send otp on mail for mail verification use NodeMailer or other service.
     const signWith = { user_id, email };
     const secretKey = process.env.JWT_SECRET;
-    console.log({env:process.env, secretKey})
+    // console.log({env:process.env, secretKey})
     const token = generateToken(signWith, secretKey);
     const verificationLink = `http://localhost:8000/email/verifyMail?token=${token}`;
     const mailOptions = {
@@ -68,7 +68,7 @@ const sendVerifyCodeToMail = async (req, res, next) => {
       subject: "Verify Your Email",
       html: `
       <h3>Email Verification</h3>
-      <p>Click below to verify your email:</p>
+      <p>Click below to verify your email(expires in one day after mail is sent):</p>
       <a href="${verificationLink}">Verify Email</a>
     `,
     };

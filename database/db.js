@@ -10,6 +10,7 @@ const Email = require("../model/email")
 const UniqueIds = require("../model/unique_id");
 const Users = require("../model/users")
 const Centre = require("../model/centre")
+const EmailOTP = require("../model/otp")
 
 async function connectToDB() {
   try {
@@ -30,6 +31,7 @@ db.Email = Email(sequelize, DataTypes)
 db.UniqueIds = UniqueIds(sequelize, DataTypes)
 db.Users = Users(sequelize, DataTypes)
 db.Centre = Centre(sequelize, DataTypes)
+db.EmailOTP = EmailOTP(sequelize, DataTypes)
 
 Object.keys(db).forEach((modelName) => {
   if ( db[modelName].associate && typeof db[modelName].associate === "function") {

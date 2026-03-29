@@ -1,7 +1,9 @@
 const { db } = require("../database/db");
 const generateToken = require("../services/generateJWTToken");
+const generateOTP = require("../services/generateOTP");
 const sendEmail = require("../services/sendVerifyCodeToMail");
 const EmailModel = db.Email;
+const EmailOTPModel = db.EmailOTP;
 const UIDModel = db.UniqueIds;
 const UserModel = db.Users;
 const jwt = require("jsonwebtoken");
@@ -41,7 +43,7 @@ const isRootMail = async (req, res, next) => {
 };
 
 const sendVerifyCodeToMail = async (req, res, next) => {
-  console.log(req.query)
+  console.log(req.query);
   const { user_id, email } = req.query;
   try {
     if (!user_id) {
@@ -56,21 +58,37 @@ const sendVerifyCodeToMail = async (req, res, next) => {
         msg: `Email not present!`,
       });
     }
+
+    const otp = generateOTP();
+
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+
+    await EmailOTPModel.create({
+      email,
+      otp,
+      expires_at: expiresAt,
+    });
     //service api, external api, request, where server is a client requesting other server to send mail: send otp on mail for mail verification use NodeMailer or other service.
-    const signWith = { user_id, email };
-    const secretKey = process.env.JWT_SECRET;
-    // console.log({env:process.env, secretKey})
-    const token = generateToken(signWith, secretKey);
-    const verificationLink = `http://localhost:8000/email/verifyMail?token=${token}`;
+    // const signWith = { user_id, email };
+    // const secretKey = process.env.JWT_SECRET;
+    // // console.log({env:process.env, secretKey})
+    // const token = generateToken(signWith, secretKey);
+    // const verificationLink = `http://localhost:8000/email/verifyMail?token=${token}`;
+    // const mailOptions = {
+    //   from: process.env.EMAIL_USER,
+    //   to: email,
+    //   subject: "Verify Your Email",
+    //   html: `
+    //   <h3>Email Verification</h3>
+    //   <p>Click below to verify your email(expires in one day after mail is sent):</p>
+    //   <a href="${verificationLink}">Verify Email</a>
+    // `,
+    // };
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Verify Your Email",
-      html: `
-      <h3>Email Verification</h3>
-      <p>Click below to verify your email(expires in one day after mail is sent):</p>
-      <a href="${verificationLink}">Verify Email</a>
-    `,
+      subject: "Your OTP Code",
+      html: `<h2>Email Verification</h2><p>Your OTP is:</p><h1>${otp}</h1><p>Valid for 5 minutes</p>`,
     };
     return await sendEmail(mailOptions, res);
   } catch (error) {
@@ -83,23 +101,42 @@ const sendVerifyCodeToMail = async (req, res, next) => {
 };
 
 const verifyMail = async (req, res, next) => {
-  const { token } = req.query;
+  // const { token } = req.query;
+  const { email, otp } = req.query;
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await UserModel.findByPk(decoded.user_id);
-    const email = await EmailModel.findOne({
+    // const email = await EmailModel.findOne({
+    //   where: {
+    //     email: decoded.email,
+    //     root_mail: 1,
+    //   },
+    //   raw: true,
+    // });
+    if (!user) return res.status(400).send("Invalid user");
+    const record = await EmailOTPModel.findOne({
       where: {
-        email: decoded.email,
-        root_mail: 1,
+        email,
+        otp,
+        expires_at: {
+          [Op.gt]: new Date(),
+        },
       },
-      raw: true,
+      order: [["createdAt", "DESC"]],
     });
 
-    if (!user) return res.status(400).send("Invalid user");
-    if (!email || !email.root_mail)
-      return res.status(400).send("Invalid root email");
+    if (!record) {
+      return res.status(400).json({ error: "Invalid or expired OTP" });
+    }
+
+    record.is_verified = true;
+    await record.save();
+
+    
+    // if (!email || !email.root_mail)
+    //   return res.status(400).send("Invalid root email");
 
     res.status(200).send("Email verified successfully!");
   } catch (err) {

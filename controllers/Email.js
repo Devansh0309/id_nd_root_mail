@@ -102,12 +102,12 @@ const sendVerifyCodeToMail = async (req, res, next) => {
 
 const verifyMail = async (req, res, next) => {
   // const { token } = req.query;
-  const { email, otp } = req.query;
+  const { email, otp, user_id } = req.query;
 
   try {
     // const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await UserModel.findByPk(decoded.user_id);
+    // const user = await UserModel.findByPk(decoded.user_id);
     // const email = await EmailModel.findOne({
     //   where: {
     //     email: decoded.email,
@@ -115,7 +115,7 @@ const verifyMail = async (req, res, next) => {
     //   },
     //   raw: true,
     // });
-    if (!user) return res.status(400).send("Invalid user");
+    // if (!user) return res.status(400).send("Invalid user");
     const record = await EmailOTPModel.findOne({
       where: {
         email,
@@ -134,11 +134,15 @@ const verifyMail = async (req, res, next) => {
     record.is_verified = true;
     await record.save();
 
-    
+    const signWith = { user_id, email };
+    const secretKey = process.env.JWT_SECRET;
+    // // console.log({env:process.env, secretKey})
+    const token = generateToken(signWith, secretKey);
+
     // if (!email || !email.root_mail)
     //   return res.status(400).send("Invalid root email");
 
-    res.status(200).send("Email verified successfully!");
+    res.status(200).json({ msg: "Email verified successfully!", token});
   } catch (err) {
     res.status(400).send("Invalid or expired token");
   }

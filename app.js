@@ -10,6 +10,7 @@ dotenv.config();
 
 allRoutes(app)
 
+
 // app.listen(PORT, (error) =>{
 //     if(!error)
 

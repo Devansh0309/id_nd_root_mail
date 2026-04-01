@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { db } = require("../database/db");
 const generateToken = require("../services/generateJWTToken");
 const generateOTP = require("../services/generateOTP");
@@ -128,6 +129,8 @@ const verifyMail = async (req, res, next) => {
     });
 
     if (!record) {
+      console.log("Record not found or Invalid or expired OTP");
+      
       return res.status(400).json({ error: "Invalid or expired OTP" });
     }
 
@@ -138,12 +141,13 @@ const verifyMail = async (req, res, next) => {
     const secretKey = process.env.JWT_SECRET;
     // // console.log({env:process.env, secretKey})
     const token = generateToken(signWith, secretKey);
-
+    console.log({token}, "Email verified successfully!");
     // if (!email || !email.root_mail)
     //   return res.status(400).send("Invalid root email");
 
     res.status(200).json({ msg: "Email verified successfully!", token});
   } catch (err) {
+    console.log({err})
     res.status(400).send("Invalid or expired token");
   }
 };

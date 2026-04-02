@@ -145,7 +145,7 @@ const verifyMail = async (req, res, next) => {
     // if (!email || !email.root_mail)
     //   return res.status(400).send("Invalid root email");
 
-    res.status(200).json({ msg: "Email verified successfully!", token});
+    res.status(200).json({ msg: "Email verified successfully!", token, status: "success"});
   } catch (err) {
     console.log({err})
     res.status(400).send("Invalid or expired token");

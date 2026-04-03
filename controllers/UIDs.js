@@ -21,8 +21,10 @@ const showUID = async (req, res, next) => {
       include: {
         model: UIDModel,
         attributes: ["unique_id"],
+        raw:true
       },
       raw: true,
+      nest:true
     });
     if (getUID && getUID.email && getUID.u_id) {
       return res.status(200).json({

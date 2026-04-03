@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  UniqueIds.afterCreate(async (uniq_id) => {
+  UniqueIds?.afterCreate(async (uniq_id) => {
     const uniqueId = "C" + uniq_id.uid.toString(36).padStart(7, "0");
 
     await uniq_id.update({ unique_id: uniqueId });

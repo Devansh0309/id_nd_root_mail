@@ -12,10 +12,12 @@ const getCentres = async (req, res, next) => {
       return res.status(200).json({
         msg: "all centres fetched successfully!",
         data: allCentres,
+        status: "success"
       });
     }
     return res.status(500).json({
       msg: "all centres fetched failed!",
+      status: "fail"
     });
   } catch (error) {
     console.log({ error });

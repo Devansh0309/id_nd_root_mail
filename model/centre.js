@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Centre.associate = (models) => {
     Centre.hasMany(models.UniqueIds, {
-      foreignKey: "u_id",
+      foreignKey: "uniq_id",
     }); //ok
     //add relation with user using user_id
   };

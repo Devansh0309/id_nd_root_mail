@@ -7,13 +7,13 @@ const Email = sequelize.define("email", {
     allowNull: false,
     defaultValue: 0,
   },
-  u_id: { type: DataTypes.INTEGER, allowNull: false },
+  uniq_id: { type: DataTypes.INTEGER, allowNull: true },
   user_id:{type: DataTypes.INTEGER} //to add
 });
 
 Email.associate = (models) => {
   Email.belongsTo(models.UniqueIds, {
-    foreignKey: "u_id",
+    foreignKey: "uniq_id",
   }); //ok
   //add relation with user using user_id
   Email.belongsTo(models.Users, {

@@ -153,14 +153,14 @@ const verifyMail = async (req, res, next) => {
 };
 
 const addRootMail = async (req, res, next) => {
-  const { email, u_id } = req.body;
+  const { email, uniq_id } = req.body;
   if (!email) {
     return res.status(400).json({
       status: "fail",
       msg: `Mail not present!`,
     });
   }
-  if (!u_id || (u_id && Number.isNaN(u_id)) || (u_id && !parseInt(u_id))) {
+  if (!uniq_id || (uniq_id && Number.isNaN(uniq_id)) || (uniq_id && !parseInt(uniq_id))) {
     return res.status(400).json({
       status: "fail",
       msg: `Either uid not present or uid not in correct format!`,
@@ -168,10 +168,10 @@ const addRootMail = async (req, res, next) => {
   }
   try {
     const [createMailNdUIDEntry, created] = await EmailModel.findOrCreate({
-      where: { email, u_id },
+      where: { email, uniq_id },
       defaults: {
         email,
-        u_id,
+        uniq_id,
         root_mail: 1,
       },
     });

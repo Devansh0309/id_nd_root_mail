@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       centre_id: { type: DataTypes.INTEGER, allowNull: false }, //to add
       course_start_date: { type: DataTypes.DATE, allowNull: false }, //to add
       seat_number: { type: DataTypes.INTEGER, allowNull: false }, //to add
-      user_id:{type: DataTypes.INTEGER} //to add
+      user_id: { type: DataTypes.INTEGER }, //to add
     },
     {
       indexes: [
@@ -45,11 +45,12 @@ module.exports = (sequelize, DataTypes) => {
       ],
     },
   );
+  console.log("Before associate:", Object.keys(UniqueIds.rawAttributes));
 
   UniqueIds.associate = (models) => {
-    UniqueIds.hasMany(models.Email, {
-      foreignKey: "u_id",
-    }); //ok
+    // UniqueIds.hasMany(models.Email, {
+    //   foreignKey: "uniq_id",
+    // }); //ok
     UniqueIds.belongsTo(models.Centre, {
       foreignKey: "centre_id",
     }); //ok
@@ -57,12 +58,15 @@ module.exports = (sequelize, DataTypes) => {
     UniqueIds.belongsTo(models.Users, {
       foreignKey: "user_id",
     });
+    console.log("After hasMany:", Object.keys(UniqueIds.rawAttributes));
+    // delete UniqueIds.rawAttributes.uniq_id;
+    // UniqueIds.refreshAttributes();
   };
 
-  UniqueIds?.afterCreate(async (uniq_id) => {
-    const uniqueId = "C" + uniq_id.uid.toString(36).padStart(7, "0");
+  // UniqueIds?.afterCreate(async (uniq_id) => {
+  //   const uniqueId = "C" + uniq_id.uid.toString(36).padStart(7, "0");
 
-    await uniq_id.update({ unique_id: uniqueId });
-  });
+  //   await uniq_id.update({ unique_id: uniqueId });
+  // });
   return UniqueIds;
 };

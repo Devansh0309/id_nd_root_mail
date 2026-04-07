@@ -28,8 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       course_number: { type: DataTypes.INTEGER, allowNull: true }, //either this or dat of course, to add
       centre_id: { type: DataTypes.INTEGER, allowNull: false }, //to add
       course_start_date: { type: DataTypes.DATE, allowNull: false }, //to add
-      seat_number: { type: DataTypes.INTEGER, allowNull: false }, //to add
-      user_id: { type: DataTypes.INTEGER }, //to add
+      seat_number: { type: DataTypes.STRING(5), allowNull: false }, //to add
+      user_id: { type: DataTypes.INTEGER, allowNull: true }, //to add
     },
     {
       indexes: [

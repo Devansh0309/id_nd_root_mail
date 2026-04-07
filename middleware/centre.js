@@ -2,9 +2,12 @@ const { db } = require("../database/db");
 const CentreModel = db.Centre;
 
 const isValidCentreId = async (req, res, next) => {
-  const { centre_id } = req.query;
+  let { centre_id } = req.query;
+  centre_id = parseInt(centre_id);
+  console.log({typ: typeof centre_id, centre_id})
   try {
-    if (!centre_id || Number.isNaN(centre_id) || Number.parseInt(centre_id)) {
+    if (!centre_id || Number.isNaN(centre_id) || !Number.parseInt(centre_id)) {
+      console.log("Inside centreid if of isValidCentreId")
       return res.status(400).json({
         status: "fail",
         msg: `Centre id not present or not an integer!`,
@@ -18,15 +21,18 @@ const isValidCentreId = async (req, res, next) => {
       attributes: ["centre"],
     });
     if (validCentreId && validCentreId) {
+      console.log("Centre id valid", validCentreId)
       req.centre_id = centre_id;
-      next();
+      return next(); 
     }
+    console.log("Centre id not valid")
     return res.status(400).json({
       status: "fail",
       msg: `Centre id not valid!`,
     });
   } catch (err) {
     console.error(err);
+
     return res.status(500).json({
       status: "fail",
       msg: `Failed to validate centre!`,

@@ -130,7 +130,7 @@ const verifyMail = async (req, res, next) => {
 
     if (!record) {
       console.log("Record not found or Invalid or expired OTP");
-      
+
       return res.status(400).json({ error: "Invalid or expired OTP" });
     }
 
@@ -141,26 +141,33 @@ const verifyMail = async (req, res, next) => {
     const secretKey = process.env.JWT_SECRET;
     // // console.log({env:process.env, secretKey})
     const token = generateToken(signWith, secretKey);
-    console.log({token}, "Email verified successfully!");
+    console.log({ token }, "Email verified successfully!");
     // if (!email || !email.root_mail)
     //   return res.status(400).send("Invalid root email");
 
-    res.status(200).json({ msg: "Email verified successfully!", token, status: "success"});
+    res
+      .status(200)
+      .json({ msg: "Email verified successfully!", token, status: "success" });
   } catch (err) {
-    console.log({err})
+    console.log({ err });
     res.status(400).send("Invalid or expired token");
   }
 };
 
 const addRootMail = async (req, res, next) => {
-  const { email, uniq_id } = req.body;
+  let { email, uniq_id } = req.query;
+  uniq_id = parseInt(uniq_id)
   if (!email) {
     return res.status(400).json({
       status: "fail",
       msg: `Mail not present!`,
     });
   }
-  if (!uniq_id || (uniq_id && Number.isNaN(uniq_id)) || (uniq_id && !parseInt(uniq_id))) {
+  if (
+    !uniq_id ||
+    (uniq_id && Number.isNaN(uniq_id)) ||
+    (uniq_id && !parseInt(uniq_id))
+  ) {
     return res.status(400).json({
       status: "fail",
       msg: `Either uid not present or uid not in correct format!`,
@@ -179,11 +186,13 @@ const addRootMail = async (req, res, next) => {
       return res.status(200).json({
         status: "success",
         msg: `New entry created for mail & uid: ${createMailNdUIDEntry}!`,
+        data: createMailNdUIDEntry.root_mail,
       });
     } else if (createMailNdUIDEntry && !created) {
       return res.status(200).json({
         status: "success",
         msg: `Entry for mail & uid: ${createMailNdUIDEntry}, already exists!`,
+        data: createMailNdUIDEntry.root_mail,
       });
     }
     return res.status(500).json({
@@ -192,7 +201,11 @@ const addRootMail = async (req, res, next) => {
     });
   } catch (error) {
     console.error(err);
-    throw new Error();
+    return res.status(500).json({
+      status: "fail",
+      msg: `Entry for mail & uid couldn't be found or created!`,
+    });
+    // throw new Error();
   }
 };
 

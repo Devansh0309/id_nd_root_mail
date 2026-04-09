@@ -155,6 +155,7 @@ const verifyMail = async (req, res, next) => {
 };
 
 const addRootMail = async (req, res, next) => {
+   //add self mail as root mail if uid exists by details used to check uid exists before creating.
   let { email, uniq_id } = req.query;
   uniq_id = parseInt(uniq_id)
   if (!email) {

@@ -43,6 +43,7 @@ const showUID = async (req, res, next) => {
 };
 
 const createUID = async (req, res, next) => {
+  //add self mail as root mail if uid exists by details used to check uid exists before creating.
   let centre_id = req.centre_id;
   let { course_start_date, seat_number, course_type, course_number, email } =
     req.query;

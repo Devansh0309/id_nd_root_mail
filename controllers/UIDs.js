@@ -45,7 +45,8 @@ const showUID = async (req, res, next) => {
 const createUID = async (req, res, next) => {
   //add self mail as root mail if uid exists by details used to check uid exists before creating.
   let centre_id = req.centre_id;
-  let { course_start_date, seat_number, course_type, course_number, email } =
+  const email = req.email;
+  let { course_start_date, seat_number, course_type, course_number } =
     req.query;
   // centre_id = parseInt(centre_id);
   course_number = parseInt(course_number);
@@ -144,7 +145,7 @@ const createUID = async (req, res, next) => {
 
     if (existing) {
       uniq_id = existing;
-      console.log({uniq_id, created})
+      console.log({ uniq_id, created });
     } else {
       uniq_id = await UIDModel.create(
         {
@@ -157,7 +158,7 @@ const createUID = async (req, res, next) => {
         { attributes: { exclude: ["uniq_id"] }, transaction: t },
       );
       created = true;
-      console.log({uniq_id, created})
+      console.log({ uniq_id, created });
     }
 
     //*What type of id to use for uid which saves space, fits well with max users, avoids collision?
@@ -176,7 +177,7 @@ const createUID = async (req, res, next) => {
           status: "success",
           msg: `Entry for uniq_id created!`,
           unique_id: uniq_id.unique_id,
-          unique_id_ref: uniq_id.uid
+          unique_id_ref: uniq_id.uid,
         });
       }
       const record = await UIDModel.findOne({
@@ -201,7 +202,7 @@ const createUID = async (req, res, next) => {
         status: "success",
         msg: `Entry for uniq_id already exists!`,
         unique_id: uniq_id.unique_id,
-        unique_id_ref: uniq_id.uid
+        unique_id_ref: uniq_id.uid,
       });
     }
     await t.rollback();

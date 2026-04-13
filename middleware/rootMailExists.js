@@ -23,17 +23,31 @@ const uidExistsForMail = async (req, res, next) => {
       raw: true,
       nest: true,
     });
-    if (getUID && getUID.email && !getUID.uniq_id) {
-    //   return res.status(200).json({
-    //     status: "success",
-    //     data: getUID,
-    //   });
-    }
-    else if (getUID && getUID.email && getUID.uniq_id) {
-    //   return res.status(200).json({
-    //     status: "success",
-    //     data: getUID,
-    //   });
+    if (getUID && getUID.email && !getUID.unique_ids) {
+      return res.status(200).json({
+        status: "success",
+        data: getUID,
+        msg: "couldn't get any uid for mail",
+      });
+    } else if (
+      getUID &&
+      getUID.email &&
+      getUID.unique_ids &&
+      !getUID.unique_ids.unique_id
+    ) {
+      return res.status(200).json({
+        status: "success",
+        data: getUID,
+        msg: "couldn't get any uid for mail",
+      });
+    } else if (
+      getUID &&
+      getUID.email &&
+      getUID.unique_ids &&
+      getUID.unique_ids.unique_id
+    ) {
+      req.email = email;
+      return next();
     }
     return res.status(200).json({
       status: "success",
@@ -49,4 +63,4 @@ const uidExistsForMail = async (req, res, next) => {
   }
 };
 
-module.exports = uidExistsForMail
+module.exports = uidExistsForMail;

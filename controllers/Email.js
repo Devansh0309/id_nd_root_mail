@@ -159,6 +159,7 @@ const addRootMail = async (req, res, next) => {
   let { email, uniq_id } = req.query;
   uniq_id = parseInt(uniq_id)
   if (!email) {
+    console.log("on line 162");
     return res.status(400).json({
       status: "fail",
       msg: `Mail not present!`,
@@ -169,6 +170,7 @@ const addRootMail = async (req, res, next) => {
     (uniq_id && Number.isNaN(uniq_id)) ||
     (uniq_id && !parseInt(uniq_id))
   ) {
+    console.log("on line 173");
     return res.status(400).json({
       status: "fail",
       msg: `Either uid not present or uid not in correct format!`,
@@ -176,7 +178,7 @@ const addRootMail = async (req, res, next) => {
   }
   try {
     const [createMailNdUIDEntry, created] = await EmailModel.findOrCreate({
-      where: { email, uniq_id },
+      where: { email, uniq_id , root_mail: 1},
       defaults: {
         email,
         uniq_id,
@@ -184,18 +186,21 @@ const addRootMail = async (req, res, next) => {
       },
     });
     if (created) {
+      console.log("on line 187");
       return res.status(200).json({
         status: "success",
         msg: `New entry created for mail & uid: ${createMailNdUIDEntry}!`,
         data: createMailNdUIDEntry.root_mail,
       });
     } else if (createMailNdUIDEntry && !created) {
+      console.log("on line 194");
       return res.status(200).json({
         status: "success",
         msg: `Entry for mail & uid: ${createMailNdUIDEntry}, already exists!`,
         data: createMailNdUIDEntry.root_mail,
       });
     }
+    console.log("on line 201");
     return res.status(500).json({
       status: "fail",
       msg: `Entry for mail & uid: ${createMailNdUIDEntry}, not found & neither created!`,

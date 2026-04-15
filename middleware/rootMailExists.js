@@ -23,7 +23,10 @@ const uidExistsForMail = async (req, res, next) => {
       raw: true,
       nest: true,
     });
-    if (getUID && getUID.email && !getUID.unique_ids) {
+    console.log({getUID});
+    
+    if (getUID && getUID.email && !getUID.unique_id) {
+      console.log("on line 29");
       return res.status(200).json({
         status: "success",
         data: getUID,
@@ -32,9 +35,10 @@ const uidExistsForMail = async (req, res, next) => {
     } else if (
       getUID &&
       getUID.email &&
-      getUID.unique_ids &&
-      !getUID.unique_ids.unique_id
+      getUID.unique_id &&
+      !getUID.unique_id.unique_id
     ) {
+      console.log("on line 40");
       return res.status(200).json({
         status: "success",
         data: getUID,
@@ -43,17 +47,19 @@ const uidExistsForMail = async (req, res, next) => {
     } else if (
       getUID &&
       getUID.email &&
-      getUID.unique_ids &&
-      getUID.unique_ids.unique_id
+      getUID.unique_id &&
+      getUID.unique_id.unique_id
     ) {
-      req.email = email;
+      console.log("on line 52");
+      req.email = mailId;
       return next();
     }
+    console.log("on line 56");
     return res.status(200).json({
       status: "success",
       msg: `Either RootMail or UID not found by mailId: ${mailId}`,
     });
-  } catch (error) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
       status: "fail",

@@ -131,7 +131,13 @@ const verifyMail = async (req, res, next) => {
     if (!record) {
       console.log("Record not found or Invalid or expired OTP");
 
-      return res.status(400).json({ error: "Invalid or expired OTP" });
+      return res
+        .status(200)
+        .json({
+          err: "expired",
+          msg: "Invalid or expired OTP",
+          status: "fail",
+        });
     }
 
     record.is_verified = true;
@@ -155,9 +161,9 @@ const verifyMail = async (req, res, next) => {
 };
 
 const addRootMail = async (req, res, next) => {
-   //add self mail as root mail if uid exists by details used to check uid exists before creating.
+  //add self mail as root mail if uid exists by details used to check uid exists before creating.
   let { email, uniq_id } = req.query;
-  uniq_id = parseInt(uniq_id)
+  uniq_id = parseInt(uniq_id);
   if (!email) {
     console.log("on line 162");
     return res.status(400).json({
@@ -178,7 +184,7 @@ const addRootMail = async (req, res, next) => {
   }
   try {
     const [createMailNdUIDEntry, created] = await EmailModel.findOrCreate({
-      where: { email, uniq_id , root_mail: 1},
+      where: { email, uniq_id, root_mail: 1 },
       defaults: {
         email,
         uniq_id,

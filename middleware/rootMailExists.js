@@ -55,10 +55,12 @@ const uidExistsForMail = async (req, res, next) => {
       return next();
     }
     console.log("on line 56");
-    return res.status(200).json({
-      status: "success",
-      msg: `Either RootMail or UID not found by mailId: ${mailId}`,
-    });
+    req.email = mailId;
+    return next();
+    // return res.status(200).json({
+    //   status: "success",
+    //   msg: `Either RootMail or UID not found by mailId: ${mailId}`,
+    // });
   } catch (err) {
     console.error(err);
     return res.status(500).json({

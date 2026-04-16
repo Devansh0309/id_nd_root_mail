@@ -27,6 +27,7 @@ const showUID = async (req, res, next) => {
       nest: true,
     });
     if (getUID && getUID.email && getUID.uniq_id) {
+      console.log({getUID});
       return res.status(200).json({
         status: "success",
         data: getUID,

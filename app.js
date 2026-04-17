@@ -1,12 +1,13 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const { connectToDB } = require('./database/db');
 const allRoutes = require("./routes/allRoutes")
 const cors = require("cors");
-const dotenv = require('dotenv');
 const app = express();
 const PORT = 8000;
 app.use(cors())
-dotenv.config();
+
 
 allRoutes(app)
 

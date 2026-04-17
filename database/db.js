@@ -1,8 +1,13 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
 // Option 3: Passing parameters separately (other dialects)
-const sequelize = new Sequelize('id_nd_mails', 'root', 'Abc@1234', {
-  host: 'localhost',
+// console.log({
+//   DB_USER: process.env.app_user,
+//   DB_PASS: process.env.db_pass,
+//   DB_HOST: process.env.host
+// });
+const sequelize = new Sequelize(process.env.db, process.env.app_user, process.env.db_pass, {
+  host: process.env.host,
   dialect: 'mysql'
 });
 

@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes } = require("sequelize");
 
 // Option 3: Passing parameters separately (other dialects)
 // console.log({
@@ -6,16 +6,28 @@ const { Sequelize, DataTypes } = require('sequelize');
 //   DB_PASS: process.env.db_pass,
 //   DB_HOST: process.env.host
 // });
-const sequelize = new Sequelize(process.env.db, process.env.app_user, process.env.db_pass, {
-  host: process.env.host,
-  dialect: 'mysql'
-});
+const sequelize = new Sequelize(
+  process.env.aiven_db,
+  process.env.aiven_user,
+  process.env.aiven_db_pass,
+  {
+    host: process.env.aiven_host,
+    dialect: "mysql",
+    port: Number(process.env.aiven_port),
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  },
+);
 
-const Email = require("../model/email")
+const Email = require("../model/email");
 const UniqueIds = require("../model/unique_id");
-const Users = require("../model/users")
-const Centre = require("../model/centre")
-const EmailOTP = require("../model/otp")
+const Users = require("../model/users");
+const Centre = require("../model/centre");
+const EmailOTP = require("../model/otp");
 
 async function connectToDB() {
   try {
@@ -33,14 +45,17 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.Email = Email(sequelize, DataTypes)
-db.UniqueIds = UniqueIds(sequelize, DataTypes)
-db.Users = Users(sequelize, DataTypes)
-db.Centre = Centre(sequelize, DataTypes)
-db.EmailOTP = EmailOTP(sequelize, DataTypes)
+db.Email = Email(sequelize, DataTypes);
+db.UniqueIds = UniqueIds(sequelize, DataTypes);
+db.Users = Users(sequelize, DataTypes);
+db.Centre = Centre(sequelize, DataTypes);
+db.EmailOTP = EmailOTP(sequelize, DataTypes);
 
 Object.keys(db).forEach((modelName) => {
-  if ( db[modelName].associate && typeof db[modelName].associate === "function") {
+  if (
+    db[modelName].associate &&
+    typeof db[modelName].associate === "function"
+  ) {
     db[modelName].associate(db);
   }
 });
@@ -49,4 +64,4 @@ db.sequelize.sync({ alter: false }).then(() => {
   console.log("Yes re-sync done");
 });
 
-module.exports ={connectToDB, db}
+module.exports = { connectToDB, db };

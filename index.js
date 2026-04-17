@@ -11,7 +11,9 @@ app.use(cors())
 
 allRoutes(app)
 
-
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from api DOCs" });
+});
 // app.listen(PORT, (error) =>{
 //     if(!error)
 

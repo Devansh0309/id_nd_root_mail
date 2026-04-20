@@ -8,7 +8,6 @@
 
 ### 📱 Mobile App (Expo)
 
-* ✅ User authentication (Login/Register).
 * ✅ Add any self email to check whether it is root type or not?
 * ✅ Verify that self email using otp send to that email for device & email       verification.
 * ✅ Get uid associated with verified root email or create new uid for verified self email.
